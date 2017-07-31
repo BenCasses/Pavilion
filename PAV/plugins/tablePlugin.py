@@ -122,7 +122,7 @@ class GetResults(IPlugin):
                                     "  possibilities are (f)ilename (r)esult (s)tart_time "
                                     "  (e)nd_time (n)ame n(o)des (c)ores or (d)FIELD"
                                     "  FIELD matches any line starting with <FIELD>"
-                                    "  Default pattern is : n r s e")
+                                    "  Default pattern is the environment variable PTH_TABLEFORMAT or 'n r s e'")
 
         parser_gr.set_defaults(sub_cmds = 'table')
         return 'table'
@@ -167,18 +167,13 @@ class GetResults(IPlugin):
 
         # establish time window
         # we'll need this for start time constraints
-        # time.timezone localizes it
-        # if in daylight savings time, intermediary values here will be one hour off
-        #   this won't affect the results
-        #
-        # storing time in epoch form so it's easy to subtract and compare
-        now = time.time()-time.timezone
+        # getting time in epoch form so it's easy to subtract and compare
+        now = time.mktime(time.localtime())
         mdytimeformat = "%m-%d-%YT%H:%M:%S"
         ymdtimeformat = "%Y-%m-%dT%H:%M:%S"
         # default is 15 days ago to now
-        # remember that these are all in UTC
-        starttimeinterval = (time.gmtime(now-1296000), time.gmtime(now)) 
-        endtimeinterval = (time.gmtime(now-1296000), time.gmtime(now)) 
+        starttimeinterval = (time.localtime(now-1296000), time.localtime(now)) 
+        endtimeinterval = (time.localtime(now-1296000), time.localtime(now)) 
         if args['s']:
              starttimeinterval = (time.strptime(args['s'][0], ymdtimeformat), starttimeinterval[1])
         if args['S']:
@@ -194,8 +189,13 @@ class GetResults(IPlugin):
         # output format
         if args['o']:
             outputform = args['o'][0].split()
+        elif ( "PTH_TABLEFORMAT" in os.environ ):
+            outputform = os.environ["PTH_TABLEFORMAT"].split()
+            if args['verbose']:
+                print "using PTH_TABLEFORMAT: " + os.environ["PTH_TABLEFORMAT"]
         else:
             outputform = ['n', 'r', 's', 'e']
+
         outputheader = []
         for field in outputform:
             if field == "f":
