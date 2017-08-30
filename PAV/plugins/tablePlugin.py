@@ -217,12 +217,15 @@ class GetResults(IPlugin):
 
         # get the results log files
         outputlist = []
+        logfilecount = 0
         for results_dir in res_loc_list:
             if not os.path.isdir(results_dir):
                 print "pav: error: looking in an invalid directory: "+ str(results_dir)
             else:
                 for base, dirs, files in os.walk(results_dir):
                     for alogfile in fnmatch.filter(files, "*.log"):
+
+                        logfilecount += 1
 
                         if args['verbose']:
                             print "considering log file: "+base+"/"+alogfile
@@ -363,6 +366,8 @@ class GetResults(IPlugin):
             for fn in range(len(l)):
                 print l[fn] + " "*(bufferlist[fn]-len(l[fn])) + delim,
             print ""
+
+        print "\n" + str(len(outputlist)) + " results found out of " + str(logfilecount) + " .log files"
 
 
 if __name__ == "__main__":
