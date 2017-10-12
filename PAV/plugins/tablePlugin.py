@@ -289,7 +289,7 @@ class GetResults(IPlugin):
                             # convert it to epoch seconds
                             endtime = time.strptime(str(endtime.group(0).split()[1]), mdytimeformat)
                         else:
-                            endtime = re.search("remove WS:.*([0-9]+-[0-9]+-[0-9]+T[0-9]+:[0-9]+:[0-9]+)", contents)
+                            endtime = re.search("remove WS:.*\.([0-9]+-[0-9]+-[0-9]+T[0-9]+:[0-9]+:[0-9]+)", contents)
                             if endtime:
                                 endtime = time.strptime(str(endtime.group(1)), mdytimeformat)
                             
